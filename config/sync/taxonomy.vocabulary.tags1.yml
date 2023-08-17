@@ -1,0 +1,8 @@
+uuid: ee21923c-405b-4f08-8ccb-035b69790374
+langcode: en
+status: true
+dependencies: {  }
+name: Tags
+vid: tags1
+description: 'tags in blog'
+weight: 0

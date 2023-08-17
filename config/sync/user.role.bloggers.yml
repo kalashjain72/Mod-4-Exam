@@ -1,0 +1,17 @@
+uuid: c8db7295-deb9-409b-952d-d15e89c31895
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.blogs
+  module:
+    - node
+id: bloggers
+label: Bloggers
+weight: 4
+is_admin: false
+permissions:
+  - 'create blogs content'
+  - 'delete blogs revisions'
+  - 'delete own blogs content'
+  - 'view blogs revisions'

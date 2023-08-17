@@ -1,0 +1,6 @@
+services:
+  blogapi.controller:
+    class: Drupal\blogapi\Controller\BlogsApiController
+    arguments: ['@database']
+    tags:
+      - { name: 'controller.service_arguments' }

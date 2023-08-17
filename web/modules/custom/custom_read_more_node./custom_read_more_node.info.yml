@@ -1,0 +1,7 @@
+name: 'Custom Read More for Node'
+type: module
+description: 'Adds dynamic Read More and Show Less functionality to nodes'
+core_version_requirement: ^9 || ^10
+package: Custom
+libraries:
+  - custom_read_more_node/custom-read-more
