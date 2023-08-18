@@ -13,6 +13,7 @@ module:
   config: 0
   contact: 0
   contextual: 0
+  custom_blog_cleanup: 0
   custom_read_more_node: 0
   datetime: 0
   dblog: 0

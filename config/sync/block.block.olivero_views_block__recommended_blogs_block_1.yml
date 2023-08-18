@@ -1,0 +1,33 @@
+uuid: a3fb4d50-87b0-43d2-b2f3-aef00748762e
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.recommended_blogs
+  module:
+    - node
+    - views
+  theme:
+    - olivero
+id: olivero_views_block__recommended_blogs_block_1
+theme: olivero
+region: sidebar
+weight: 0
+provider: null
+plugin: 'views_block:recommended_blogs-block_1'
+settings:
+  id: 'views_block:recommended_blogs-block_1'
+  label: ''
+  label_display: visible
+  provider: views
+  context_mapping: {  }
+  views_label: ''
+  items_per_page: none
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      blogs: blogs
