@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Implementing some hook functions.
+ */
+
+use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+
+function custom_blog_cleanup_cron() {
+  // Calculate the timestamp for one year ago from now.
+  $oneYearAgo = strtotime('-1 year');
+
+  // Load all users with the 'guest_blogger' role.
+  $query = \Drupal::entityQuery('user')
+    ->condition('roles', 'guest_blogger')
+    ->execute();
+
+  $guestBloggers = User::loadMultiple($query);
+
+  foreach ($guestBloggers as $guestBlogger) {
+    // Load and delete the blogs authored by this guest blogger more than one year ago.
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'blog')
+      ->condition('created', $oneYearAgo, '<')
+      ->condition('uid', $guestBlogger->id());
+
+    $nids = $query->execute();
+    if (!empty($nids)) {
+      // Delete the nodes.
+      $nodes = Node::loadMultiple($nids);
+      foreach ($nodes as $node) {
+        $node->delete();
+      }
+    }
+  }
+}

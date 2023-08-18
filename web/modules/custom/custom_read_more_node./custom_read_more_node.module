@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for custom_read_more module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_preprocess_HOOK() for node templates.
+ */
+function custom_read_more_node_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  $body_field_name = 'body';
+
+  if ($node->getType() == 'blogs') {
+    $body = $node->get($body_field_name)->value;
+    $trimmed_body = Html::escape(mb_substr(strip_tags($body), 0, 50));
+    $full_body = Html::escape($body);
+    $variables['content']['body']['#markup'] = '<div class="blog-summary">' . $trimmed_body . ' <a href="#" class="read-more">show More</a></div>';
+    $variables['content']['body']['#markup'] .= '<div class="blog-full-content">' . $full_body . ' <a href="#" class="show-less">Show Less</a></div>';
+  }
+}

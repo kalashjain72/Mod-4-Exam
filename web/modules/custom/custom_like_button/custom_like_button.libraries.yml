@@ -1,0 +1,6 @@
+custom-like-button:
+  version: 1.x
+  js:
+    js/custom-like-button.js: {}
+  dependencies:
+    - core/jquery

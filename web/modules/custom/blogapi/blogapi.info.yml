@@ -1,0 +1,7 @@
+name: 'Blog API'
+type: module
+description: 'Provides an API to list blogs based on configuration.'
+core_version_requirement: ^9 || ^10
+package: Custom
+dependencies:
+  - drupal:views

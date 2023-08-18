@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implements hook_views_plugins_relationship_alter().
+ */
+function author_registration_views_plugins_relationship_alter(array &$plugins) {
+
+}
+
+/**
+ * Implements hook_mail().
+ */
+function author_registration_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'welcome_email':
+      $message['subject'] = t('Welcome to our site, @username!', ['@username' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('Hello @username,', ['@username' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('Welcome to our site! Your account has been created and you can now log in using the following link:');
+      $message['body'][] = t('<a href="@login_url">@login_url</a>', ['@login_url' => $params['url']]);
+      $message['body'][] = t('We look forward to seeing you around!');
+      break;
+
+    case 'admin_notification':
+      $message['subject'] = t('New User Registration: @username', ['@username' => $params['user']->getDisplayName()]);
+      $message['body'][] = t('A new user has registered on the site with the following details:');
+      $message['body'][] = t('Full Name: @full_name', ['@full_name' => $params['full_name']]);
+      $message['body'][] = t('Email Address: @email', ['@email' => $params['email']]);
+      $message['body'][] = t('Role: @role', ['@role' => $params['role']]);
+      break;
+  }
+}

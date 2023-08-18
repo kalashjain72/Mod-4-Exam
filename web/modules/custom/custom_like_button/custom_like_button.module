@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * This file used to define schema of field.
+ */
+
+/**
+ * Implements hook_field_schema().
+ */
+function custom_like_button_field_schema($field) {
+  return [
+    'columns' => [
+      'likes' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => 0,
+      ],
+    ],
+  ];
+}
