@@ -3,7 +3,7 @@ _core:
 langcode: en
 uuid: 3962df5a-7599-47ef-bce6-131deea72dce
 name: 'Mod 4 Exam'
-mail: admin@example.com
+mail: kalash.jain@innoraft.com
 slogan: ''
 page:
   403: ''
@@ -12,3 +12,4 @@ page:
 admin_compact_mode: false
 weight_select_max: 100
 default_langcode: en
+mail_notification: kalash.jain@innoraft.com

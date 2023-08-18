@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.blogs.body
+    - field.field.node.blogs.field_likes
     - field.field.node.blogs.field_published_date
     - field.field.node.blogs.field_tags1
     - node.type.blogs
@@ -30,5 +31,6 @@ content:
     weight: 100
     region: content
 hidden:
+  field_likes: true
   field_published_date: true
   field_tags1: true

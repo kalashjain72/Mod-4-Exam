@@ -4,12 +4,47 @@ namespace Drupal\author_registration\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Url;
 use Drupal\user\Entity\User;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the Author Registration form.
  */
 class AuthorRegistrationForm extends FormBase {
+
+  /**
+   * The mail manager.
+   *
+   * @var \Drupal\Core\Mail\MailManagerInterface
+   */
+  protected $mailManager;
+
+  /**
+   * Constructs an AuthorRegistrationForm object.
+   *
+   * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
+   *   The mail manager.
+   */
+  public function __construct(MailManagerInterface $mail_manager) {
+    $this->mailManager = $mail_manager;
+  }
+
+  /**
+   * Creates an instance of the form class.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The container.
+   *
+   * @return static
+   *   The instance of this form class.
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.mail')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -19,7 +54,15 @@ class AuthorRegistrationForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Builds the form.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @return array
+   *   The form array.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Define form fields.
@@ -60,11 +103,22 @@ class AuthorRegistrationForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Handles form submission.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get form values.
     $values = $form_state->getValues();
+
+    // Check if a user with the same username already exists.
+    if ($this->isUsernameTaken($values['full_name'])) {
+      \Drupal::messenger()->addError($this->t('The username is already taken. Please choose a different username.'));
+      return;
+    }
 
     // Create new user.
     $user = User::create();
@@ -76,62 +130,74 @@ class AuthorRegistrationForm extends FormBase {
     $user->block();
     $user->save();
 
-    // Send notification to admin.
-    $this->sendAdminNotification($user, $values['full_name']);
+    \Drupal::messenger()->addMessage($this->t('User created successfully.'));
 
-    // Send thank you email to user.
-    $this->sendUserThankYouEmail($values['email']);
+    // Send admin notification.
+    $this->sendAdminNotification($user, $values['full_name'], $values['email'], $values['role']);
+
+    // Send welcome email to the user.
+    $this->sendWelcomeEmail($user);
+
+    // You can send admin notifications or thank you emails here if needed.
+  }
+
+  /**
+   * Checks if a username is already taken.
+   *
+   * @param string $username
+   *   The username to check.
+   *
+   * @return bool
+   *   TRUE if the username is taken, FALSE otherwise.
+   */
+  private function isUsernameTaken($username) {
+    $user = user_load_by_name($username);
+    return !empty($user);
   }
 
   /**
    * Sends an admin notification email.
-   *
-   * @param \Drupal\user\Entity\User $user
-   *   The newly created user.
-   * @param string $fullName
-   *   The full name of the user.
    */
-  private function sendAdminNotification(User $user, $fullName) {
-    $mailManager = \Drupal::service('plugin.manager.mail');
+  private function sendAdminNotification($user, $full_name, $email, $role) {
     $module = 'author_registration';
     $key = 'admin_notification';
-    $to = 'kalashjain72@gmail.com';
-    $params['message'] = 'A new user has submitted the form: ' . $fullName;
-    $params['user'] = $user;
+    $to = 'kalash.jain@innoraft.com';
+    $params = [
+      'user' => $user,
+      'full_name' => $full_name,
+      'email' => $email,
+      'role' => $role,
+    ];
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $send = TRUE;
 
-    $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+    $result = \Drupal::service('plugin.manager.mail')->mail($module, $key, $to, $langcode, $params, NULL, $send);
     if ($result['result'] !== TRUE) {
-      \Drupal::messenger()->addMessage($this->t('Problem in sending message.'));
-    }
-    else {
-      \Drupal::messenger()->addMessage($this->t('Admin notification sent.'));
+      \Drupal::logger('author_registration')->error('Problem sending admin notification email.');
     }
   }
 
   /**
-   * Sends a thank you email to the user.
+   * Sends a welcome email to the user.
    *
-   * @param string $email
-   *   The user's email address.
+   * @param \Drupal\user\Entity\User $user
+   *   The newly created user.
    */
-  private function sendUserThankYouEmail($email) {
-    $mailManager = \Drupal::service('plugin.manager.mail');
-    $module = 'author_registration';
-    $key = 'user_thank_you';
-    $to = $email;
-    $params['message'] = 'Thank you for your submission. We will get back to you soon.';
-    $langcode = \Drupal::currentUser()->getPreferredLangcode();
-    $send = TRUE;
+  private function sendWelcomeEmail(User $user) {
+    // Prepare email parameters.
+    $params = [
+      'user' => $user,
+      'url' => Url::fromRoute('user.login', [], ['absolute' => TRUE])->toString(),
+    ];
 
-    $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
-    if ($result['result'] !== TRUE) {
-      \Drupal::messenger()->addMessage($this->t('Problem in sending message.'));
-    }
-    else {
-      \Drupal::messenger()->addMessage($this->t('Thank you email sent.'));
-    }
+    // Send email using the SMTP module.
+    $this->mailManager->mail(
+      'author_registration', // Module name.
+      'welcome_email', // Email key
+      $user->getEmail(), // Recipient email
+      $user->getPreferredLangcode(), // Language code
+      $params // Email parameters
+    );
   }
 
 }

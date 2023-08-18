@@ -1,0 +1,5 @@
+name: 'Custom Like Button'
+type: module
+description: 'Defines a custom like button field.'
+core_version_requirement: ^9 || ^10
+package: Custom

@@ -1,6 +1,8 @@
 name: 'Author Registration'
 type: module
-description: 'Provides functionality for user registration and approval for authors.'
+description: 'Provides a form for registering authors and creating blocked user accounts.'
 core_version_requirement: ^9 || ^10
 package: Custom
-configure: author_registration.settings
+dependencies:
+  - drupal:user
+version: 1.0

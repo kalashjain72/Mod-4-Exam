@@ -1,7 +1,7 @@
-author_registration.author_registration:
+author_registration.form:
   path: '/become-an-author'
   defaults:
     _form: '\Drupal\author_registration\Form\AuthorRegistrationForm'
-    _title: 'Become an Author'
+    _title: 'become-an-author'
   requirements:
     _permission: 'access content'

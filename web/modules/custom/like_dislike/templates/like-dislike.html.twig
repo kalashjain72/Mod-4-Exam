@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a formatted like dislike field.
+ *
+ * Available variables:
+ * - like_url: like url.
+ * - likes: number of likes.
+ * - disable: show or hide the like/dislike
+ * - entity_id: Id of entity(content).
+ *
+ * @ingroup themeable
+ */
+#}
+{% if disable == 0 %}
+<div class="like_dislike">
+    <div class="like">
+        <a class="use-ajax" href={{ like_url }}>{{ likes_label }}</a>
+        <span id="like-{{ entity_id }}">{{ likes }}</span>
+    </div>
+</div>
+{% endif %}

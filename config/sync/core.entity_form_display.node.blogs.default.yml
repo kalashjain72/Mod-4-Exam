@@ -4,11 +4,13 @@ status: true
 dependencies:
   config:
     - field.field.node.blogs.body
+    - field.field.node.blogs.field_likes
     - field.field.node.blogs.field_published_date
     - field.field.node.blogs.field_tags1
     - node.type.blogs
   module:
     - datetime
+    - like_dislike
     - path
     - text
 id: node.blogs.default
@@ -29,6 +31,12 @@ content:
   created:
     type: datetime_timestamp
     weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_likes:
+    type: like_dislike_widget
+    weight: 124
     region: content
     settings: {  }
     third_party_settings: {  }

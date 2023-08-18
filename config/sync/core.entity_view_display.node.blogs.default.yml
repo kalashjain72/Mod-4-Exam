@@ -4,12 +4,14 @@ status: true
 dependencies:
   config:
     - field.field.node.blogs.body
+    - field.field.node.blogs.field_likes
     - field.field.node.blogs.field_published_date
     - field.field.node.blogs.field_tags1
     - node.type.blogs
   module:
     - datetime
     - expand_collapse_formatter
+    - like_dislike
     - user
 id: node.blogs.default
 targetEntityType: node
@@ -28,6 +30,15 @@ content:
       link_class_close: ecf-close
     third_party_settings: {  }
     weight: 101
+    region: content
+  field_likes:
+    type: like_dislike_formatter
+    label: above
+    settings:
+      likes_label: Like
+      dislikes_label: Dislike
+    third_party_settings: {  }
+    weight: 104
     region: content
   field_published_date:
     type: datetime_plain
